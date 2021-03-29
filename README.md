@@ -17,12 +17,14 @@ https://github.com/rundun159/2020_AI_Grand_Challenge
 'Korean Ministry of Science and ICT' hold AI competition named '2020 AI Grand Challenge'.<br>
 I participated in the computer vision competition of that in 1st and 2nd round as a member of Computer vision start-up, 'Nuvi Lab'. And won 5th and 3rd winner in each round.
 </dev>
+
 ## MathMatical MultiLine Segmentation
 <dev>
 <h5>
 https://github.com/rundun159/mathmatical_multiLine_segmentation</h5>
 I implemented a system from scratch which corrects skewnewss and performs line segmentation on handwritten multi-line mathematical expressions.
 </dev>
+
 ## SKKU
 <div>
 <h5>
@@ -33,20 +35,23 @@ I uploaded some works I have done on lectures. Works include assignments, projec
 3_2 : BD (BigData Analysis) DB (Database) ML (Machine Learning)<br>
 4_1 : AL (Algorithm)<br>
 </div>
-### Problem Solving
+
+## Problem Solving
 <dev>
 <h5>
 https://github.com/rundun159/problem_solving</h5>
 I solved some algorithm problems using C++ & python.
 I uploaded my codes.
 </dev>
-### ToBigs
+
+## ToBigs
 <dev>
 <h5>
 https://github.com/rundun159/To_Bigs</h5>
 ToBigs(http://www.datamarket.kr/xe/page_SKdp53) is a union club where students from variety majors and campuses learn machine learning algorithms. Here, I uploaded some assignments I submitted.
 </dev>
-### Kaggle
+
+## Kaggle
 <dev>
 <h5>
 https://github.com/rundun159/TH_Kaggle
