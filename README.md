@@ -1,4 +1,33 @@
 # Taehyung Gil portfolio
+<hr>
+# Skills
+<div>
+<h4>1. Programming Languages</h4>
+ Proficient :
+
+> <b>Python</b> (Pytorch, Numpy, Pandas, Matplotlib, Scikit-Learn, Django)
+> <b>C++ </b> (STL, OpenCV) <br>
+
+ Familiar :
+
+> <b>Java</b>
+
+<h4>2. OS : </h4>
+
+> <b>Linux</b> (Proficient with Linux commands) , Windows
+
+<h4>3. DB : </h4>
+
+> <b>MySQL</b>
+
+<h4>4. Devops : </h4>
+
+> <b>Docker</b> (Write Dockerfile, Build Docker Image and Manage Docker Container)
+
+</div>
+<hr>
+
+# Projects
 
 ## VLDB
 <dev>
@@ -24,6 +53,10 @@ I participated in the computer vision competition of that in 1st and 2nd round a
 https://github.com/rundun159/mathmatical_multiLine_segmentation</h5>
 I implemented a system from scratch which corrects skewnewss and performs line segmentation on handwritten multi-line mathematical expressions.
 </dev>
+
+<hr>
+
+# Study
 
 ## SKKU
 <div>
