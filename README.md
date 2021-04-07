@@ -8,8 +8,8 @@
 
  Proficient :
 
-> <b>Python</b> (Pytorch, Numpy, Pandas, Matplotlib, Scikit-Learn, Django)
-> <b>C++ </b> (STL, OpenCV) <br>
+> <b>Python</b> (Pytorch, Numpy, Pandas, Matplotlib, Scikit-Learn, Django)   
+> <b>C++ </b> (STL, OpenCV)
 
  Familiar :
 
