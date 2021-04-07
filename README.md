@@ -1,8 +1,11 @@
 # Taehyung Gil portfolio
 <hr>
+
 # Skills
+
 <div>
 <h4>1. Programming Languages</h4>
+
  Proficient :
 
 > <b>Python</b> (Pytorch, Numpy, Pandas, Matplotlib, Scikit-Learn, Django)
