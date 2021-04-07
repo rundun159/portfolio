@@ -11,7 +11,6 @@
   * <b>C++ </b> (STL, OpenCV)
 * Familiar :
   * <b>Java</b>
-
 <h4>2. OS : </h4>
 
 * <b>Linux</b> (Proficient with Linux commands) , Windows
