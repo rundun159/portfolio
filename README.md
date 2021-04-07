@@ -6,26 +6,23 @@
 <div>
 <h4>1. Programming Languages</h4>
 
- Proficient :
-
-> <b>Python</b> (Pytorch, Numpy, Pandas, Matplotlib, Scikit-Learn, Django)   
-> <b>C++ </b> (STL, OpenCV)
-
- Familiar :
-
-> <b>Java</b>
+* Proficient :
+  * <b>Python</b> (Pytorch, Numpy, Pandas, Matplotlib, Scikit-Learn, Django)   
+  * <b>C++ </b> (STL, OpenCV)
+* Familiar :
+  * <b>Java</b>
 
 <h4>2. OS : </h4>
 
-> <b>Linux</b> (Proficient with Linux commands) , Windows
+* <b>Linux</b> (Proficient with Linux commands) , Windows
 
 <h4>3. DB : </h4>
 
-> <b>MySQL</b>
+* <b>MySQL</b>
 
 <h4>4. Devops : </h4>
 
-> <b>Docker</b> (Write Dockerfile, Build Docker Image and Manage Docker Container)
+* <b>Docker</b> (Write Dockerfile, Build Docker Image and Manage Docker Container)
 
 </div>
 <hr>
