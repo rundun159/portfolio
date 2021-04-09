@@ -26,31 +26,51 @@
 </div>
 <hr>
 
-# Projects
+# Experiences
 
-## 1. VLDB
-<dev>
+## 1. Internship _ VLDB
+<div>
 <h5>
 https://github.com/rundun159/VLDB
 </h5>
 VLDB(Very Large Database) is a labatory in SKKU(Sungkyunkwan University) researching optimization of Database on SSD.<br>
-I'm working here as an intern. I'm optimizing space management of MySQL on SSD.
+I'm working here as an intern. I'm optimizing space management of MySQL on SSD. <br>
+(Used C++)
 
 
-## 2. 2020 AI Grand Challenge
+## 2. Competition _ 2020 AI Grand Challenge
 
 <h5>
 https://github.com/rundun159/2020_AI_Grand_Challenge
 </h5>
+<div>
 'Korean Ministry of Science and ICT' hold AI competition named '2020 AI Grand Challenge'.<br>
-I participated in the computer vision competition of that in 1st and 2nd round as a member of Computer vision start-up, 'Nuvi Lab'. And won 5th and 3rd winner in each round.
+I participated in the computer vision competition of that in 1st and 2nd round as a member of Computer vision start-up, 'Nuvi Lab'. And won <b>5th and 3rd winner</b> in each round. <br>
+(Used Python. Pytorch, Numpy, Pandas, Matplotlib, Scikit-learn)
+</div>
 
-## 3. MathMatical MultiLine Segmentation
+## 3. Internship _ Nuvi-Labs
+
+<div>
+Nuvi-Lab is a computer vision startup which works in the nutrition field. (https://nuvi-labs.com/) <br>
+I analyzed and pre-processed data, and trained and applied AI models to applications. <br>
+(Used Python. Pytorch, Numpy, Pandas, Matplotlib, Scikit-learn)
+</div>
+
+
+
+## 4. Project _ MathMatical MultiLine Segmentation
 <h5>
 https://github.com/rundun159/mathmatical_multiLine_segmentation</h5>
-I implemented a system from scratch which corrects skewnewss and performs line segmentation on handwritten multi-line mathematical expressions.
-</dev>
+I implemented a system from scratch which corrects skewnewss and performs line segmentation on handwritten multi-line mathematical expressions. <br>
+(Used C++. openCV)
+</div>
 
+## 5. Internship _ Cornerstone Smart
+<div>
+Cornerstone Smart is an IoT startup. I joined an Android application development project. <br>
+Implemented UI/UX parts using Android Studio. <br>
+(Used Java, XML)
 <hr>
 
 # Study
