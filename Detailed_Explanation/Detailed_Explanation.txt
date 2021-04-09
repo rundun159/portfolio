@@ -1,0 +1,250 @@
+저는 기술적으로 어려운 문제를 해결하기 위해 노력한 세개의 경험이 있습니다.
+
+1. 기울어진 손글씨 수식 단락 문장 분할 모듈 개발
+2. ‘2020 AI Grand Challenge’ Classifier model 개발
+3. SKKU VLDB에서 SSD Trim/Discard를 활용한 MySQL Space Management 최적화
+
+1. 기울어진 손글씨 수식 단락 문장 분할 모듈 개발 (https://github.com/rundun159/mathmatical_multiLine_segmentation)
+
+A. summary: 새로운 알고리즘을 설계하고 구현했습니다. (C++. openCV 활용)
+
+B. 맞닥뜨렸던 문제
+
+	성균관대학교 Visual Computing Lab에서 손글씨 수식 단락 이미지 OCR 프로그램 개발에 참여했습니다. 저는 딥러닝 모델이 문장 단위로 input을 받을 수 있도록 단락 이미지 전처리 모듈 개발을 맡았습니다. (https://github.com/rundun159/mathmatical_multiLine_segmentation에서 예시 전처리 입력과 출력을 확인하실수 있습니다.) 전처리 과정은 크게 두 단계였습니다.
+
+		1. 수식 단락의 기울어진 각도를 계산하여, 단락을 수평 방향으로 회전
+		2. 단락을 문장별로 분할
+
+	1번 단계를 해결하는 것은 크게 어렵지 않았습니다. Huff transform을 사용하여 기울어진 각도를 계산하였고,
+  OpenCV의 warpAffine 함수를 사용하여 단락의 중심점을 기준으로 기울어진 각도만큼 반대 방향으로 회전시켰습니다.
+
+	2번 단계가 제겐 어려웠습니다. 실행 시간상의 제한으로 전처리 과정에서 딥러닝은 사용하지 못하는 상황이었습니다. 결국 휴리스틱 알고리즘을 사용해서 구현해야 했습니다.
+	y축 방향의 Histogram을 사용하여 segmentation을 진행한 Git Repository(https://github.com/Samir55/Image2Lines)를 알게되어 해당 Repository에 사용된 알고리즘을 본 개발에서도 적용하려 했습니다.
+	하지만, 해당 알고리즘을 본 개발에 적용해봤지만 제대로 작동하지 않았습니다. 해당 Repository는 손글씨 '영문' 단락을 분할하기 위해 구현 되었고, 본 개발에서는 손글씨 '수식' 단락 분할을 해야했기 때문입니다.
+	수식에는 다양한 형식이 있습니다. 분수, 지수, 시그마, 적분, 행렬 등,  Histogram을 사용하여 Segmentation을 진행한다면 두 문장으로 분할되는 형식이 본 과제에서는 한 문장으로 분할되어야 했습니다.
+	또한, 개발 의뢰측에서 문장간 다소 침범하는 부분이 있더라도 서로 다른 문장으로 분할하도록 요구했습니다.
+
+	어려웠던 문제를 정리하면 다음과 같습니다.
+
+		a. 분수, 지수, 시그마, 적분, 행렬 등 문자간의 간격이 있지만 한 문장으로 인식되어야 하는 형식들
+		b. 인접한 두 문장간의 침범하는 부분이 있더라도 서로 다른 문장으로 분할을 진행해야 함
+
+C. 접근 방법과 해결과정
+
+C-1. 접근 방법 :
+
+	다양한 수식들을 관찰하면서
+
+	a. 영문과는 어떤 차이점이 있는지 & 수식 문장들에는 어떤 패턴이 있는지
+	b. segmentation을 성공적으로 수행하기 위해서는 어떤 정보들이 있어야 하는지
+
+	고민했습니다.
+
+	수식 문장 분할의 가장 큰 걸림돌은 분수식, 지수식, 시그마, 적분, 행렬식었습니다.
+
+	- 분수식은 해당 문장에 분모와 분자를 나누는 bar가 있음을 알수 있어야 했습니다.
+	- 지수식, 시그마, 적분은 문장 위 아래에 있는 문자의 크기가 비교적 작고, 문장과의 간격이 비교적 가깝다는 것을 알수 있어야 했습니다.
+	- 행렬식은 수식들을 감싸는 ( )가 있음을 알수 있어야 했습니다.
+
+	segmentation을 성공적으로 수행하기 위해 필요한 정보들을 정리하면 다음과 같았습니다.
+
+	- 문자들의 높이/폭와 평균 (지수식, 시그마, 적분식의 위 아래 문자들을 인식하기 위함)
+	- 문자들의 높이:폭 비율과 평균 (분수식의 bar와 행렬식의 ()를 인식하기 위함)
+	- 문장간의 간격과 평균 (지수식, 시그마, 적분식의 위 아래 문자들을 인식하기 위함)
+
+C-2. 해결 과정 :
+
+	1. openCV의 findContours 함수 사용
+
+	Histogram을 활용한 Repository 코드를 보면서 값을 갖는 연속된 픽셀들의 직사각형 contour를 반환하는 openCV의 findContours 함수가 있음을 알게 되었고, 필요한 정보들을 얻기 위해 사용하기로 했습니다.
+	findContours 함수를 사용하면 각 문자를 둘러싼 직사각형 contour의 위치, 높이, 폭를 알 수 있었습니다. 이 정보들을 활용하여 문제를 해결해보고자 했습니다.
+
+	2. 새로운 알고리즘 설계
+
+	기존의 알고리즘은 contour가 아닌 histogram을 사용하였기에 새로운 알고리즘을 설계해야 했습니다.
+	1. contour들의 높이, 폭의 평균 구하기 & contour들의 높이:폭 비율 구하기
+	2. contour들의 높이:폭 비율을 미리 설정한 Threshold와 비교하여 분수식의 bar를 찾아서 따로 저장해둡니다.
+	3. contour들의 높이를 기준으로 내림차순으로 문장 분할을 진행합니다.
+		3-1. 해당 contour와 겹치는 문장이 없다면, 해당 구간을 새로운 문장의 구간으로 정합니다.  (행렬식 해결)
+			이때, 해당 contour의 높이와 평균 contour의 일정 비율 이상일때에만 새로운 문장의 구간으로 정합니다.
+			이외의 경우에는 따로 저장해둡니다.
+		3-2. 해당 contour가 미리 설정한 Threshold 이상으로 겹치는 문장이 있다면, 해당 문장으로 포함시킵니다.
+		3-3. 어느 문장에도 포함되지 않는 contour들은 따로 저장해둡니다.
+	4. 어느 문장에도 포함되지 않았던 contour들을 대상으로 문장 분할을 진행합니다.
+		4-1. 해당 contour으로부터 위 아래 문장까지의 거리를 비교하여 한쪽이 우세하게 가까운 경우, 가까운 문장에 포함시킵니다. (지수식, 시그마, 적분식 해결)
+		4-2. 위 아래 문장까지의 거리가 유사하고, 해당 contour가 분수식의 bar로 판단되는 경우(높이:폭 비율), 위 아래 문장을 한 문장으로 합칩니다. (분수식 해결)
+	5. 분수식이 아닌 부분과, 분수식인 부분이 공존하는 문장들을 처리합니다. (분수식이지만 분모와 분자가 한 문장으로 포함되지 않은 경우를 찾습니다.)
+		5-1. 모든 bar contour를 대상으로 위 아래 픽셀들까지의 거리를 계산하여 거리간의 비율이 미리 설정한 Threshold 이하라면,
+			분수식으로 판단하여 두 문장을 한 문장으로 합칩니다. (분수식 해결)
+
+	3. C++로 알고리즘을 구현했습니다. (https://github.com/rundun159/mathmatical_multiLine_segmentation/tree/main/Codes_exe/codes)
+
+D. 실제 결과
+
+	대부분의 분수식, 지수식, 시그마, 적분, 행렬식을 인식하여 한 문장으로 분할할 수 있었습니다.
+	프로젝트 예시 input, output은 https://github.com/rundun159/mathmatical_multiLine_segmentation/blob/main/Results/README.md 에서 확인할 수 있습니다.
+	Histogram Algorithm 결과물 (https://github.com/rundun159/mathmatical_multiLine_segmentation/blob/main/Results/org_results.md) 과 비교하면
+	많은 문제들이 해결되었음을 확인할 수 있습니다.
+
+E. 개선을 위한 고민 과정
+
+  시그마 수식에서 문장이 분할 되는 문제가 몇몇 있었습니다.
+  Hyper Parameter를 기준으로 알고리즘이 구현되었기에, 몇몇의 케이스 맞춰서 Hyper Paramer를 조정하면
+  Overfitting 될 가능성이 있었습니다.
+
+  의뢰측에서 딥러닝 사용을 제한했기에, 고전적인 Machine Learning을 사용하여 개선할 수 있는 방법을 고안하기 위해
+  고민했습니다.
+
+  Logistic Regression 또는 SVM과 같이 비교적 연산량이 적은 Machine Learning 알고리즘을 사용하여
+  인접한 문장간의 높이와 Contour 개수, 상대적 위치를 입력받아서 inference하는 방법을 고안했습니다.
+
+  해당 방법을 프로젝트에 적용하고 싶었으나, 프로젝트 마간이 임박하여 적용하지는 못했습니다.
+
+
+2. ‘2020 AI Grand Challenge’ Classifier model 개발
+
+A. summary : 팀원들과 AI model pipeline을 설계하고 구현했습니다. Multi-Label Classifier model 개발 역할을 맡아서 수행했습니다.
+
+B. 맞닥뜨렸던 문제
+
+  2020년 Computer Vision Startup Nuvi-Lab(https://nuvi-labs.com/)에서 AI Engineer Intern으로 근무하면서
+  회사 팀원분들과 함께 과기정통부 주관의 '2020 AI Grand Challenge'에 참여했습니다.
+
+  주어진 Task는 여러 생활폐기물이 포함된 일정한 크기의 이미지가 주어졌을때,
+  어떤 종류의 쓰레기들이 있는지 분류하는 것이었습니다.(Multi-label classification)
+  예를 들어, 이미지안에 3개의 종이, 2개의 플라스틱, 4개의 CAN쓰레기가 있다면 output으로 종이, 플라스틱, CAN이 있다고 반환해야 했습니다.
+  (예시 Input/Output : https://github.com/rundun159/2020_AI_Grand_Challenge)
+  Sample Input Image가 주어지고, Training Data는 주어지지 않았습니다.
+  참가 팀들이 직접 Data를 수집해야 했습니다.
+
+  이를 해결하기 위해 팀원들과 함께 AI model pipeline을 설계/구현했고 Training Data 수집 계획을 세우고 실행했습니다.
+
+  설계한 Pipeline은 Object Detection Model(Yolo,...)을 사용하여 이미지내에서 쓰레기를 직사각형으로 Crop하고
+  Crop한 Bbox를 input으로 Classfier(Efficientnet,...)가 multi-label classification을 수행하는 pipeline이었습니다.
+
+  저는 Classifier 개발을 주로 맡아서 성능 개선에 힘썼습니다.
+
+C. 접근 방법과 해결과정
+
+  C-1. 접근 방법
+
+    1. EDA를 통해 Class Imbalance를 지속적으로 확인했습니다.
+    2. 최적의 Hyper-parameter를 찾기 위해 다양한 parameter로 model을 학습시켰고 결과를 비교했습니다.
+    3. Inference 값을 확인하면서 어떤 종류들의 Input에서 어떤 Class 추론에 문제가 있는지 확인했습니다.
+    4. 해당 문제에 적합한 Data Augmentation 방법을 연구했습니다.
+
+    Inference값을 확인하면서 알게 된 가장 큰 문제는 Detection을 통해 Crop한 Image가
+    Classfier가 분류하기에 적합하지 않다는 것이었습니다.
+
+    Detection의 결과 Crop Bbox의 Resolution이 Classfication을 수행하기에 너무 낮았습니다.
+    PET병을 생각해보면, 큰 PET병, 작은 비닐 Label지, 더 작은 플라스틱 뚜껑으로 구성되어있습니다.
+    (예시 Detction 결과를 https://github.com/rundun159/2020_AI_Grand_Challenge 에서 확인할 수 있습니다.)
+
+    즉, Detection 되어야 할 대상간의 넓이 비율의 극심한 차이가 Bbox의 너무 낮은 Resolution 문제의 원인이었습니다.
+
+  C-2. 해결 과정
+
+    1. Ensemble Hard/Soft Voting 구현 & 비교
+    2. Data Imbalance를 기반으로한 Bias 추가
+    3. Binary Classifier 사용 - Pipeline 변경
+    4. ISDA Network 사용 (Data Augmentation)
+
+    1. Ensemble Hard/Soft Voting 구현 & 비교
+      EfficientNet, ResNet 등 다양한 Classifier를 학습시켰고, 추론 성능을 최대로 하기 위해 Ensemble을 진행했습니다.
+      Ensemble의 결과를 추합하는 과정에서 Hard Voting, Soft Voting 모두 구현하여 적용하여 결과를 비교했습니다.
+
+    2. Data Imbalance를 기반으로한 Bias 추가
+      Data가 상대적으로 Class는 대체적으로 Confidence의 값이 대체로 낮은 경향이 있었습니다.
+      이를 위해 성능이 좋지 못하고 Data가 상대적으로 Class를 대상으로 Bias를 직접 추가하는 시도를 했습니다.
+
+    3. Binary Classifier 사용 - Pipeline 변경
+      Class별 존재 유무를 판단하는 여러 Binary Classifier로 Crop된 Bbox를 추론하는 Pipeline을 제안했습니다.
+
+    4. Data Augmentation - ISDA Network 사용
+      Flip, Transformation, Rotation등 다양한 기본적인 data augmentation도 진행했지만,
+      추가적으로 ISDA network를 사용하여 Augmentation을 보강했습니다. (https://github.com/blackfeather-wang/ISDA-for-Deep-Networks)
+      ISDA Network는 GAN 알고리즘을 활용하여 Augmentation을 진행합니다.
+      Repository에 제공된 코드를 Classifier Code와 결합시켜서 Model이 Augmentation된 Image로 학습될수 있도록 했습니다.
+
+D. 실제 결과
+    1. Ensemble Hard/Soft Voting 구현 & 비교
+      Soft Voting의 성능이 전반적으로 우월했습니다.
+
+    2. Data Imbalance를 기반으로한 Bias 추가
+      적절한 Bias를 찾지 못했습니다.
+      Bias의 추가는 Overfitting으로 이어지는 경향을 보였습니다.
+
+    3. Bbox Resolution 해결 - Pipeline 변경
+      변경한 Pipeline의 결과가 기존의 Pipeline보다 좋지 못했습니다.
+
+    4. Data Augmentation - ISDA Network 사용
+      유의미한 성능 개선을 얻어냈습니다.
+
+E. 고민 과정 & 아쉬운 점
+    대회를 진행하면서 주로 Class Blance와 Inference 결과를 확인하면서 개선 방향을 고민했습니다.
+
+    아쉬운 점은 Binary Classifier를 사용하는 Pipeline을 구현할때, Detector도 변경했어야 했지만 그러지 못했다는 점입니다.
+
+    분류되어야할 대상 단위로 Detection을 진행하면 Bbox의 Resolution이 낮아집니다.
+    따라서 Detector가 이미지 내의 여러 물체를 하나의 Bbox로 Crop하여 Resolution을 유지하고
+    여러 물체한 포함한 Bbox를 대상으로 Classification을 진행했어야 했지만 그러지 못했습니다.
+
+3. SKKU VLDB에서 SSD TRIM/Discard를 활용한 MySQL Space Management 최적화
+
+A. summary : drop table, truncate table 등의 명령어를 처리한 후 SSD TRIM/Discard를 활용하여 최적화 할 여지가 있는지 연구했습니다.
+
+B. 맞닥뜨렸던 문제
+  성균관대학교 VLDB는 SSD상에서 작동하는 DB 최적화 기법을 연구하는 연구실입니다. 주로 FTL 알고리즘 혹은 DB 내부 알고리즘을 수정하여 최적화를 진행합니다.
+
+  제가 선택했던 연구 주제는 SSD의 TRIM/Discard 명령을 사용한 MySQL의 Space Management를 최적화이었습니다.
+
+  SSD의 TRIM/Discard Command의 유용성은 다음과 같습니다.
+  Host가 파일을 삭제했을때, File System 상에 그 내용이 반영되지만, SSD Controller에는 즉각적으로 반영되지 않고,
+  추후에 Host가 삭제된 논리 블록에 덮어쓰기를 진행할때 SSD Controller에 저장되었던 Data가 Invalid함을 알리게 됩니다.
+  Overwrite이 가능한 HDD와 달리 SSD는 Block에 Overwrite이 안되기 때문에 빈 공간에 새로운 Data를 쓰게 됩니다.
+  Invalid한 Data가 SSD의 Block을 차지하고 있다면, 그만큼 사용할 수 있는 빈 공간이 적어지므로
+  Host의 File 삭제 정보가 SSD Controller에 반영되지 않은 것은 비효율로 이어집니다.
+
+  SSD의 TRIM/Discard Command는 File System에서 삭제된 Data를 파악하여 실제 SSD에서도 삭제하는 것을 말합니다.
+  정확히 얘기하면, SSD의 Controller가 Idle time때 Garbage Collection을 진행할때 해당 Data 포함하여 삭제하게 함으로써
+  빈 공간을 창출할 수 있게 합니다.
+
+  RocksDB로 YCSB Benchmark를 사용하여 TRIM 을 사용할 때와 사용하지 않을때를 비교했는데, 가시적인 성능차이를 보였습니다.
+  성능 비교는 https://github.com/rundun159/VLDB/blob/main/RocksDB_YCSB/TH_Results/YCSB_About_Result.md 에서 확인 하실 수 있습니다.
+
+  MySQL에서 Drop table, truncate 등의 명령을 처리하거나 SQL문을 처리하면서 임시적으로 Data를 생성하고 삭제할때 TRIM/Discard Command를 활용해서
+  최적화 할 수 있는지를 연구했습니다.
+
+C. 접근 방법과 해결과정
+
+  # MySQL이 Storage Engine으로 innoDB를 사용할때 table data를 저장하는 방식을 학습했습니다.
+
+    Default로 MySQL은 File-per-Table option이 ON으로 되어있습니다.
+    이때, MySQL은 InnoDB data dictionary, the doublewrite buffer, the change buffer, and undo logs를 저장하기 위해
+    하나의 System Tablespace 파일을 생성하고, Table당 하나의 Tablespace 파일을 생성합니다. (.ibd file)
+
+    이러한 Tablespace가 어떤 Layout으로 구성되어있는지 학습했습니다.
+
+  # MySQL의 구현 Source Code를 gdb를 사용하여 직접 디버깅하면서
+    코드 흐름을 파악하고 SSD TRIM/Discard가 일어나는지 확인했습니다.
+
+    mysql source code의 fil_create_tablespace, fil_delete_tablespace, fil_truncate_tablespace 등의
+    함수를 집중적으로 gdb를 사용하여 디버깅하면서 코드 흐름을 파악했습니다.
+
+    그 과정에서 VFS 개념, MySQL이 어떤 System Call들을 호출하는지 학습했습니다.
+
+D. 실제 결과
+
+  MySQL 코드상에서 SSD TRIM 관련 Command를 찾지 못했습니다.
+  fil_delete_tablespace에서는 remove system call, fil_truncate_tablespace에서는 ftruncate system call을 사용할 뿐
+  코드 상에서 직접적으로 SSD TRIM 관련한 수행을 하지 않았습니다.
+
+  실험을 진행하고 정확히 언제 TRIM Command가 발생하는지 확인해야 했으나, 진행하지 못하고 인턴을 마쳤습니다.
+
+E. 더 나은 방법은 없었을지에 대한 고민 과정 & 해결을 위해 얼마나 깊이 있게 고민 했는지 과정
+
+  본 프로젝트가 연구 목적도 있지만 그 과정에서 MySQL, SSD, FileSystem에 대해 학습하고자 한 동기도 컸습니다.
+  그러다보니, 결과를 빨리 내기보다는 학습에 도움이 되는 방향으로 Source code를 직접 디버깅해보며 실행 흐름을 따라가보는 식으로 프로젝트를 진행했습니다.
+
+  결과물을 빨리 내고자 했다면, Truncate와 같이 SSD TRIM이 발생하지 않을 가능성이 높은 명령어를 중심으로 실험을 진행하고
+  SSD TRIM이 발생했는지 확인하고 이를 개선할 방법을 더 빨리 찾도록 노력했을 것 같습니다.
