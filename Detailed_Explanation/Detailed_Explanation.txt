@@ -10,7 +10,10 @@ A. summary: 새로운 알고리즘을 설계하고 구현했습니다. (C++. ope
 
 B. 맞닥뜨렸던 문제
 
-	성균관대학교 Visual Computing Lab에서 손글씨 수식 단락 이미지 OCR 프로그램 개발에 참여했습니다. 저는 딥러닝 모델이 문장 단위로 input을 받을 수 있도록 단락 이미지 전처리 모듈 개발을 맡았습니다. (https://github.com/rundun159/mathmatical_multiLine_segmentation에서 예시 전처리 입력과 출력을 확인하실수 있습니다.) 전처리 과정은 크게 두 단계였습니다.
+	성균관대학교 Visual Computing Lab에서 손글씨 수식 단락 이미지 OCR 프로그램 개발에 참여했습니다. 
+	저는 딥러닝 모델이 문장 단위로 input을 받을 수 있도록 단락 이미지 전처리 모듈 개발을 맡았습니다. 
+	(https://github.com/rundun159/mathmatical_multiLine_segmentation에서 예시 전처리 입력과 출력을 확인하실수 있습니다.) 
+	전처리 과정은 크게 두 단계였습니다.
 
 		1. 수식 단락의 기울어진 각도를 계산하여, 단락을 수평 방향으로 회전
 		2. 단락을 문장별로 분할
