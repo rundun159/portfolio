@@ -46,7 +46,7 @@ https://github.com/rundun159/2020_AI_Grand_Challenge
 <div>
 'Korean Ministry of Science and ICT' hold AI competition named '2020 AI Grand Challenge'.<br>
 I participated in the computer vision competition of that in 1st and 2nd round as a member of Computer vision start-up, 'Nuvi Lab'. And won <b>5th and 3rd winner</b> in each round. <br>
-(Used Python. Pytorch, Numpy, Pandas, Matplotlib, Scikit-learn)
+(Used Docker & Python. Pytorch, Numpy, Pandas, Matplotlib, Scikit-learn )
 </div>
 
 ## 3. Internship _ Nuvi-Labs
